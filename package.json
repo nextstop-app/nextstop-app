@@ -1,0 +1,35 @@
+{
+  "name": "next-stop-la-app",
+  "version": "1.0.0",
+  "description": "MTA realtime subway updates for your stop for the LAMetric Time",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "start": "node ./server/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noriega3/next-stop-la-app.git"
+  },
+  "keywords": [
+    "lametric",
+    "mta",
+    "subway",
+    "nyc",
+    "transport",
+    "realtime"
+  ],
+  "author": "Brian Noriega",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/noriega3/next-stop-la-app/issues"
+  },
+  "homepage": "https://github.com/noriega3/next-stop-la-app#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "gtfs-realtime-bindings": "^0.0.6",
+    "node-fetch": "^3.3.0",
+    "typescript": "^4.9.4"
+  }
+}
