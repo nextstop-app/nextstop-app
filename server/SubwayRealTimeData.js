@@ -1,6 +1,7 @@
 import GtfsRealtimeBindings from "gtfs-realtime-bindings";
 import fetch from "node-fetch";
 import stationData from "../resources/station-list.json" assert { type: "json" };
+import tripsData from "../resources/trips.json" assert { type: "json" };
 
 export default class SubwayRealTimeData {
   constructor(uri) {
@@ -38,7 +39,10 @@ export default class SubwayRealTimeData {
             tripIds.add(tripId);
             entity.tripUpdate.stopTimeUpdate.forEach((scheduledTrip) => {
               const whichStation = scheduledTrip.stopId; //TODO: cleanup by train/station
-              this.json[whichStation] = {trains: []};
+
+              if(!this.json[whichStation]){
+                this.json[whichStation] = {trains: []};
+              }
               if (
                 scheduledTrip &&
                 scheduledTrip.departure &&
@@ -52,7 +56,7 @@ export default class SubwayRealTimeData {
                   const minutesAway = this.secsToMins(timeDiff);
                   const stationStopData = stationData[scheduledTrip.stopId];
                   const stationName = stationStopData.stop_name;
-                  const trainName = stationData[stationStopData.parent_station].stop_name; //TODO: this doesn't fully work
+                  const trainName = this.findHeadSign(tripId);
                   let trainDirection = '';
                   //TODO: do we trust this?
                   if(scheduledTrip.stopId){
@@ -72,10 +76,10 @@ export default class SubwayRealTimeData {
                     trainName,
                     trainDirection,
                     eta: departureTime,
+                    //rawTime: scheduledTrip.departure.time,
                     minAway: minutesAway,
-                    //rawEta: timeDiff,
+                    rawEta: timeDiff,
                   };
-                  console.log(trainStop);
 
                   // Add to response
                   this.json[whichStation].trains.push(trainStop);
@@ -86,6 +90,18 @@ export default class SubwayRealTimeData {
         }
       }
     });
+    Object.values(this.json).forEach((station) => {
+      station.trains.sort((a,b) => a.rawEta - b.rawEta);
+    });
+    console.log(this.json['G22S']);
+
+  }
+
+  findHeadSign(partialTripId){
+    const filtered = tripsData.filter(trip => 
+       trip.trip_id.includes(partialTripId)
+    );
+    return filtered.length === 1 ? filtered[0].trip_headsign : 'Unknown'
   }
 
   secsToMins(time) {
