@@ -28,8 +28,8 @@
   "homepage": "https://github.com/noriega3/next-stop-la-app#readme",
   "dependencies": {
     "dotenv": "^16.0.3",
+    "express": "^4.18.2",
     "gtfs-realtime-bindings": "^0.0.6",
-    "node-fetch": "^3.3.0",
-    "typescript": "^4.9.4"
+    "node-fetch": "^3.3.0"
   }
 }
