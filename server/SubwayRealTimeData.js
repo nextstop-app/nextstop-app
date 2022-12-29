@@ -1,11 +1,12 @@
+import fs from 'fs';
 import GtfsRealtimeBindings from "gtfs-realtime-bindings";
 import fetch from "node-fetch";
 import stationData from "../resources/station-list.json" assert { type: "json" };
 import tripsData from "../resources/trips.json" assert { type: "json" };
-
 export default class SubwayRealTimeData {
-  constructor(uri) {
+  constructor(uri, fileName) {
     this.uri = uri;
+    this.fileName = fileName;
     this.response = {};
     this.json = {};
   }
@@ -54,9 +55,15 @@ export default class SubwayRealTimeData {
                 if (timeDiff > 0) {
                   const departureTime = this.convertEpoch(scheduledTrip.departure.time);
                   const minutesAway = this.secsToMins(timeDiff);
-                  const stationStopData = stationData[scheduledTrip.stopId];
+                  let stationStopData = stationData[scheduledTrip.stopId];
+                  if(!stationStopData){
+                    console.log(`Stop Name Unknown (${tripId}): ${scheduledTrip.stopId}}`)
+                    stationStopData = {
+                      stop_name: `Unknown - ${scheduledTrip.stopId}`
+                    }
+                  }
                   const stationName = stationStopData.stop_name;
-                  const trainName = this.findHeadSign(tripId);
+                  const trainName = this.findHeadSign(tripId, entity.tripUpdate.trip);
                   let trainDirection = '';
                   //TODO: do we trust this?
                   if(scheduledTrip.stopId){
@@ -93,15 +100,34 @@ export default class SubwayRealTimeData {
     Object.values(this.json).forEach((station) => {
       station.trains.sort((a,b) => a.rawEta - b.rawEta);
     });
-    console.log(this.json['G22S']);
+  }
+
+  generateJsonFile(){
+    // convert JSON object to a string
+    const data = JSON.stringify(this.json)
+    //console.log(this.json);
+
+    // write JSON string to a file
+    fs.writeFile(`out/${this.fileName}.json`, data, err => {
+      if (err) {
+        throw err
+      }
+      console.log('JSON data is saved.')
+    })
 
   }
 
-  findHeadSign(partialTripId){
+  findHeadSign(partialTripId, temptripdata){
     const filtered = tripsData.filter(trip => 
        trip.trip_id.includes(partialTripId)
     );
-    return filtered.length === 1 ? filtered[0].trip_headsign : 'Unknown'
+
+    if(filtered.length === 0){
+      console.log(temptripdata)
+      console.log(`Train Name Unknown: ${partialTripId} - ${filtered.length}`)
+    }
+
+    return filtered.length > 0 ? filtered[0].trip_headsign : 'Unknown'
   }
 
   secsToMins(time) {
