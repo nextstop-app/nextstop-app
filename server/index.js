@@ -14,5 +14,6 @@ const APILines = [
 
 APILines.forEach(async lines => {
     await lines.getRawTrainData()
+    //TODO: combination file 
     lines.generateJsonFile()
 });

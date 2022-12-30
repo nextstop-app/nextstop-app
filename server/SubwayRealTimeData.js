@@ -29,6 +29,16 @@ export default class SubwayRealTimeData {
     const currentTime = Math.round(Date.now() / 1000);
     const buffer = await response.arrayBuffer();
     const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(new Uint8Array(buffer));
+        // convert JSON object to a string
+    /*    const data = JSON.stringify(feed)
+    
+        // write JSON string to a file
+        fs.writeFile(`out/feed-${this.fileName}.json`, data, err => {
+          if (err) {
+            throw err
+          }
+          console.log('JSON feed data is saved.')
+        })*/
     feed.entity.forEach((entity) => {
       // TODO: cleanup all these nested if statements
       if (entity.tripUpdate && entity.tripUpdate.stopTimeUpdate) {
@@ -38,11 +48,16 @@ export default class SubwayRealTimeData {
           // TODO: cleanup all these nested if statements
           if (!tripIds.has(tripId)) {
             tripIds.add(tripId);
+            const lastStopData = entity.tripUpdate.stopTimeUpdate[entity.tripUpdate.stopTimeUpdate.length-1]
+            const lastStopId = lastStopData && lastStopData.stopId ? lastStopData.stopId : -1;
             entity.tripUpdate.stopTimeUpdate.forEach((scheduledTrip) => {
               const whichStation = scheduledTrip.stopId; //TODO: cleanup by train/station
 
               if(!this.json[whichStation]){
-                this.json[whichStation] = {trains: []};
+                this.json[whichStation] = {
+                  stopName: this.findStopNameById(whichStation),
+                  trains: []
+                };
               }
               if (
                 scheduledTrip &&
@@ -55,41 +70,27 @@ export default class SubwayRealTimeData {
                 if (timeDiff > 0) {
                   const departureTime = this.convertEpoch(scheduledTrip.departure.time);
                   const minutesAway = this.secsToMins(timeDiff);
-                  let stationStopData = stationData[scheduledTrip.stopId];
+                  const stationStopData = stationData[scheduledTrip.stopId];
                   if(!stationStopData){
                     console.log(`Stop Name Unknown (${tripId}): ${scheduledTrip.stopId}}`)
-                    stationStopData = {
-                      stop_name: `Unknown - ${scheduledTrip.stopId}`
-                    }
+                    //TODO: add a .json for unknown stops for debugging
+                  } else {
+                    const stationName = stationStopData.stop_name;
+                    const trainName = this.findHeadSign(tripId, lastStopId);
+                    const trainStop = {
+                      trainId: entity.tripUpdate.trip.routeId,
+                      //stopId: scheduledTrip.stopId,
+                      //stationName,
+                      trainName,
+                      eta: departureTime,
+                      //rawTime: scheduledTrip.departure.time,
+                      minAway: minutesAway,
+                      rawEta: timeDiff,
+                    };
+  
+                    // Add to response
+                    this.json[whichStation].trains.push(trainStop);
                   }
-                  const stationName = stationStopData.stop_name;
-                  const trainName = this.findHeadSign(tripId, entity.tripUpdate.trip);
-                  let trainDirection = '';
-                  //TODO: do we trust this?
-                  if(scheduledTrip.stopId){
-                    if(scheduledTrip.stopId.endsWith('S')){
-                      trainDirection = "Southbound"
-                    } else if(scheduledTrip.stopId.endsWith('X')){
-                      trainDirection = "Express? or CrossTown?" //TODO
-                    } else if(scheduledTrip.stopId.endsWith('N')){
-                      trainDirection = "Northbound"
-                    }
-                  }
-
-                  const trainStop = {
-                    trainId: entity.tripUpdate.trip.routeId,
-                    //stopId: scheduledTrip.stopId,
-                    stationName,
-                    trainName,
-                    trainDirection,
-                    eta: departureTime,
-                    //rawTime: scheduledTrip.departure.time,
-                    minAway: minutesAway,
-                    rawEta: timeDiff,
-                  };
-
-                  // Add to response
-                  this.json[whichStation].trains.push(trainStop);
                 }
               }
             });
@@ -117,17 +118,21 @@ export default class SubwayRealTimeData {
 
   }
 
-  findHeadSign(partialTripId, temptripdata){
-    const filtered = tripsData.filter(trip => 
-       trip.trip_id.includes(partialTripId)
-    );
-
-    if(filtered.length === 0){
-      console.log(temptripdata)
-      console.log(`Train Name Unknown: ${partialTripId} - ${filtered.length}`)
+  findStopNameById(stopId){
+    if(stopId && stationData[stopId] && stationData[stopId].stop_name){
+      return stationData[stopId].stop_name;
     }
-
-    return filtered.length > 0 ? filtered[0].trip_headsign : 'Unknown'
+    return 'Unknown';
+  }
+  findHeadSign(partialTripId, lastStopId){
+    const availableTrips = tripsData.filter(trip => 
+      trip.trip_id.includes(partialTripId)
+    );
+    if(availableTrips.length > 0 && availableTrips[0].trip_headsign){ //TODO: fix reliablity if > 0
+      return availableTrips[0].trip_headsign;
+    } 
+    // When no headsign and/or id for trip, use last stop | Unknown instead
+    return this.findStopNameById(lastStopId);
   }
 
   secsToMins(time) {
