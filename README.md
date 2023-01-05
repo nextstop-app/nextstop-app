@@ -10,16 +10,22 @@
 - [ 50% ] Add export data to auto updating gist or text/json file format
 - [ ] Create cron/automation to auto update gist/raw file x min / seconds
 - [x] Automate trips.json / stations.json when it is updated upstream (converted to use the utility csvtojson)
+- [x] add backend database for pinging
 
 [ ] Lametric integration
-- [ 60% ] figure out filtering via dropdown selection - refactored the stop logic
-- [ ] use express or similar to parse url params (line, station)
+- [x] figure out filtering via dropdown selection - refactored the stop logic
+    - [ ] convert station selection to text field, (now required: add a web interface to find id of station (limitation of lametric ui))
+- [x] use express or similar to parse url params (line, station)
 - [ ] private the parsing api to only be used by lametric or webapp (keep raw data public - gists)
 - [ ] add logos for each train
 
-[ ] Web app integration
-- [ 60% ]  filtering via dropdown selection
-- [ ] match dropdown to backend integration
+[ ] Web helper interface
+- [ ] deploy to github.io to find 'station id' for user input
+- [ ] layout frontend dropdown selection
+
+Future
+- [ ] Optimize the selection dropdown menu generation
+- [ ] Look into station hubs over combined parent station ids 
 ---
 ## How to use
 
@@ -34,55 +40,61 @@
     MTA_API_URL_L=
     MTA_API_URL_G=
     MTA_TOKEN= 
+    FIREBASE_RT_URI=
     ```
     *This uses the realtime feeds [MTA Realtime API](https://api.mta.info/#/subwayRealTimeFeeds). You will need to sign up to develop or extend this application for your own usage.*
+
+    *It is not required to use firebase, just comment out/remove DBHelper and it's dot functions inside index.js*
 
 1) `npm install`
 1) `npm run start` - example uses stopId = A42S = Hoyt-Schermerhorn
 ---
-## Master Station Data Example
+## Raw Master Station Data Example
 ```json
 {
-    "trainId": "A42S",
-    "stopName": "Hoyt-Schermerhorn Sts",
-    "lines": [
-        "A",
-        "G",
-        "C"
-    ],
-    "trains": [
-        {
-            "line": "A",
-            "trainName": "Ozone Park-Lefferts Blvd",
-            "eta": "6:10 pm",
-            "minAway": "1m, 25s"
-        },
-        {
-            "line": "G",
-            "trainName": "Church Av",
-            "eta": "6:13 pm",
-            "minAway": "4m, 23s"
-        },
-        {
-            "line": "A",
-            "trainName": "Far Rockaway-Mott Av",
-            "eta": "6:17 pm",
-            "minAway": "7m, 53s"
-        },
-        {
-            "line": "A",
-            "trainName": "Ozone Park-Lefferts Blvd",
-            "eta": "6:19 pm",
-            "minAway": "9m, 53s"
-        },
-        {
-            "line": "C",
-            "trainName": "Euclid Av",
-            "eta": "6:19 pm",
-            "minAway": "9m, 53s"
-        }
-    ]
+  "trainId": "A42S",
+  "stopName": "Hoyt-Schermerhorn Sts",
+  "lines": ["A", "C", "G"],
+  "direction": "Southbound",
+  "trains": [
+    {
+      "routeId": "C",
+      "tripId": "124100_C..S",
+      "lastStopId": "A55S",
+      "time": "9:28 pm",
+      "rawEta": 441
+    },
+    {
+      "routeId": "G",
+      "tripId": "127100_G..S",
+      "lastStopId": "F27S",
+      "time": "9:30 pm",
+      "rawEta": 557
+    },
+    {
+      "routeId": "A",
+      "tripId": "124721_A..S",
+      "lastStopId": "A65S",
+      "time": "9:32 pm",
+      "rawEta": 691
+    },
+    {
+      "routeId": "G",
+      "tripId": "127920_G..S",
+      "lastStopId": "F27S",
+      "time": "9:36 pm",
+      "rawEta": 921
+    },
+    {
+      "routeId": "A",
+      "tripId": "125736_A..S",
+      "lastStopId": "H11S",
+      "time": "9:43 pm",
+      "rawEta": 1311
+    }
+  ]
 }
+
 ```
 ---
 ## How to update station/trip lists

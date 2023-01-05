@@ -6,49 +6,70 @@ export default class Stop extends Routes{
         super();
         this.id = id;
         this.stopName = name;
-        this.lines = [];
+        this.direction = id.endsWith('S') ? 'Southbound' : (id.endsWith('N') ? 'Northbound' : 'NA');
+        this.lines = new Set();
         this.trains = [];
+        this.parentId = '';
     }
 
     setStopName(){
-        this.stopName = this.getStopNameById(this.id);
+        const [stop_name, parent_station] = this.getMatchingStopData(this.id);
+        this.stopName = stop_name;
+        this.parentId = parent_station;
         return this.stopName;
     }
+
 
     addTrainData(details){
         this.trains = [...this.trains, ...details]
         this.sortTrains(); //TODO: move to full details maybe?
     }
 
+    addLinesData(lines){
+        for (const routeId of lines) {
+            this.lines.add(routeId)
+        }
+    }
+
     sortTrains(){
         this.trains.sort((a, b) => a.rawEta - b.rawEta);
     }
 
-    getTrainsMetadata(trains){
-        return Object.values(trains).map((train) => {
-            const trainName = this.getHeadSign(train);
-            if (this.lines.indexOf(train.routeId) < 0) { //adds to lines if not added previously  (TODO: take this out of )
-                this.lines.push(train.routeId)
-            }
-            return {
-                line: train.routeId,
-                trainName,
-                ...this.getRouteTiming(train),
-                //...train
-            }
-        });
+    getParentId(){
+        return this.parentId
     }
 
     getFullDetails(maxTrains = 5){
         let trains = this.trains.slice(0, maxTrains)
-        trains = this.getTrainsMetadata(trains)
 
         return {
             trainId: this.id,
             stopName: this.stopName,
-            lines: this.lines,
+            lines: Array.from(this.lines),
+            direction: this.direction,
             trains
         }
+    }
+
+    getSelectionName(){
+        if(this.stopName === "Unknown") return this.stopName;
+        return `${this.stopName} (${this.lines.join(',')})`
+    }
+
+    getId(){
+        return this.id;
+    }
+
+    getName(){
+        return this.stopName;
+    }
+    
+    getDirection(){
+        return this.direction;
+    }
+
+    getLines(){
+        return this.lines;
     }
 
     /*generateJsonFile() {
