@@ -145,3 +145,5 @@ dist
 
 .history
 train-poller.js
+
+.DS_Store

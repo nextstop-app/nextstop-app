@@ -1,4 +1,3 @@
-import fs from 'fs';
 import Routes from './Routes.js';
 
 export default class Stop extends Routes{
@@ -71,22 +70,4 @@ export default class Stop extends Routes{
     getLines(){
         return this.lines;
     }
-
-    /*generateJsonFile() {
-        // convert JSON object to a string
-        const data = JSON.stringify({
-            trainId: this.id,
-            stopName: this.stopName,
-            lines: this.lines,
-            trains: this.trains
-        })
-
-        fs.writeFile(`out/lines/${this.id}.json`, data, err => {
-            if (err) {
-                throw err
-            }
-            console.log('JSON data '+this.id+'is saved.')
-        })
-    }*/
-
 }

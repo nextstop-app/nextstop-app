@@ -5,8 +5,12 @@
   "main": "main.js",
   "type": "module",
   "scripts": {
-    "start": "node ./server/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm run rt:file",
+    "rt:sync": "node ./server/index.js rtsync",
+    "rt:file": "node ./server/index.js rtfile",
+    "parent:sync": "node ./server/index.js parentsync",
+    "parent:file": "node ./server/index.js parentfile"
+
   },
   "repository": {
     "type": "git",

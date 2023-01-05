@@ -30,8 +30,6 @@ export default class StopsList {
     getDetailsForStop(stopId) {
         let stopIndex = this.stopIds.indexOf(stopId)
         if (!this.data[stopIndex]) return []
-        // process viewer details (stop name, train name, rearrangements)
-        console.log(JSON.stringify(this.data[stopIndex].getFullDetails(5)))
     }
 
     setParentSelectionList(){
@@ -70,11 +68,11 @@ export default class StopsList {
         return this.getSelectionNames(true);
     }
     generateMasterStopListFile() {
-        fs.writeFile(`out/station-selection-list.json`, JSON.stringify(this.getSelectionNames(),  null, " "), err => {
+        fs.writeFile(`out/station-selection-list.json`, JSON.stringify(this.getSelectionNames(true),  null, " "), err => {
             if (err) {
                 throw err
             }
-            console.log('JSON station selection list is saved.')
+            console.log('JSON data is saved to /out/station-selection-list.json.')
         })
     }
     outputObject() {
@@ -90,13 +88,13 @@ export default class StopsList {
             stopIds: this.stopIds,
             stopNames: this.stopNames,
             stopData: this.data
-        })
+        }, (key, value) => value instanceof Set ? [...value] : value)
 
         fs.writeFile(`out/stoplist.json`, data, err => {
             if (err) {
                 throw err
             }
-            console.log('JSON data is saved.')
+            console.log('JSON data is saved to /out/stoplist.json.')
         })
     }
 }
