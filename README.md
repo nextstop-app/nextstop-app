@@ -1,32 +1,3 @@
-
-## Checklist
-[ ] Backend Integration
-- [x] Output any sort of output from realtime MTA api
-- [x] add relevant information for LAMetric time integration 
-    - [x] train name - uses trips.json
-    - [x] station name
-    - [x] figure out how to map newer train names added after MTA's trips.json (nov 29th) - use last stop name
-- [x] combine api feeds into master list for same station ids (ex: smith-9th street use G and F line apis, hoyt-s (ACE+G), etc.)
-- [ 50% ] Add export data to auto updating gist or text/json file format
-- [ ] Create cron/automation to auto update gist/raw file x min / seconds
-- [x] Automate trips.json / stations.json when it is updated upstream (converted to use the utility csvtojson)
-- [x] add backend database for pinging
-
-[ ] Lametric integration
-- [x] figure out filtering via dropdown selection - refactored the stop logic
-    - [ ] convert station selection to text field, (now required: add a web interface to find id of station (limitation of lametric ui))
-- [x] use express or similar to parse url params (line, station)
-- [ ] private the parsing api to only be used by lametric or webapp (keep raw data public - gists)
-- [ ] add logos for each train
-
-[ ] Web helper interface
-- [ ] deploy to github.io to find 'station id' for user input
-- [ ] layout frontend dropdown selection
-
-Future
-- [ ] Optimize the selection dropdown menu generation
-- [ ] Look into station hubs over combined parent station ids 
----
 ## How to use
 
 1) Clone this repo
@@ -39,8 +10,9 @@ Future
     MTA_API_URL_JZ=
     MTA_API_URL_L=
     MTA_API_URL_G=
-    MTA_TOKEN= 
-    FIREBASE_RT_URI=
+    MTA_TOKEN=
+    FIREBASE_RT_URI=url-to-firebase-database
+    GOOGLE_APPLICATION_CREDENTIALS=path-to-firebase-service.json
     ```
     *This uses the realtime feeds [MTA Realtime API](https://api.mta.info/#/subwayRealTimeFeeds). You will need to sign up to develop or extend this application for your own usage.*
 

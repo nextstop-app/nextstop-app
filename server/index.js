@@ -7,7 +7,6 @@ import DatabaseHelper from './DatabaseHelper.js';
 const params = process.argv.slice(2);
 const operation = params[0] || 'rtfile';
 
-const DBHelper = new DatabaseHelper(process.env.FIREBASE_RT_URI);
 const MasterStopsList = new StopsList();
 const APILines = [
     new SubwayRealTimeData(process.env.MTA_API_URL_1234567),
@@ -20,6 +19,7 @@ const APILines = [
 ]
 let progress = 1;
 let init = async () => {
+    let DBHelper;
     console.log('Starting API Processing..');
 
     // Process each API
@@ -43,10 +43,12 @@ let init = async () => {
         case 'parentsync':
             console.log('Syncing parent stations to database..');
             MasterStopsList.setParentSelectionList();
+            DBHelper = new DatabaseHelper(process.env.FIREBASE_RT_URI);
             await DBHelper.setParentData(MasterStopsList.outputMasterStopList())
             break;
         case 'rtsync':
             console.log('Syncing RT data to database..');
+            DBHelper = new DatabaseHelper(process.env.FIREBASE_RT_URI);
             await DBHelper.setRealTimeData(MasterStopsList.outputObject()) // update upstream db
             break;
         case 'rtfile':

@@ -147,3 +147,4 @@ dist
 train-poller.js
 
 .DS_Store
+firebaseServiceAccountKey.json
