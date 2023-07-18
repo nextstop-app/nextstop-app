@@ -76,10 +76,10 @@
 1) `cd utilities/csvtojson/`
 1) `npm install`
 1) Create a folder called `/in/` = `utilities/csvtojson/in/`
-1) Add the csv file for stations.txt and rename to input.csv, insert it to `/in/input.csv` folder
+1) Add the csv file for `stops.txt` or `trips.txt` and rename to input.csv, insert it to `/in/input.csv` folder
 1) `npm run start`
 1) Move `/out/output.json` to the `/resources/` folder
-1) Rename to appropriate filename: `stations|trips.json`
+1) Rename to appropriate filename: stops = `stations.json` or trips = `trips.json`
 ---
 ## Disclaimer
 By using / modifying or consuming this software, you are abiding by the existing MTA regulations for the handling of their data. By using this application, the developer is not held responsible for any loss or damages that is in relation to this application. The station/train information provided by this app to the end-user may not be real time because of the lag time between the real time of the MTA data and the hosting of the server where data is held.
