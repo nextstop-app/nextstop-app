@@ -1,5 +1,6 @@
 ## How to use
 
+1) Node 18+
 1) Clone this repo
 1) Populate the `.env` file with the following values from the MTA developer site.
     ```

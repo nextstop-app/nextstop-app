@@ -1,6 +1,6 @@
 {
-  "name": "next-stop-la-app",
-  "version": "1.0.0",
+  "name": "nextstop-app",
+  "version": "1.1.0",
   "description": "MTA realtime subway updates for your stop for the LAMetric Time",
   "main": "main.js",
   "type": "module",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/noriega3/next-stop-la-app.git"
+    "url": "git+https://github.com/nextstop-app/nextstop-app/next-stop-la-app.git"
   },
   "keywords": [
     "lametric",
@@ -26,14 +26,14 @@
   "author": "Brian Noriega",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/noriega3/next-stop-la-app/issues"
+    "url": "https://github.com/nextstop-app/nextstop-app/issues"
   },
-  "homepage": "https://github.com/noriega3/next-stop-la-app#readme",
+  "homepage": "https://github.com/nextstop-app/nextstop-app#readme",
   "dependencies": {
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "firebase-admin": "^11.4.1",
-    "gtfs-realtime-bindings": "^0.0.6",
-    "node-fetch": "^3.3.0"
+    "firebase-admin": "^11.10.1",
+    "gtfs-realtime-bindings": "^1.1.1",
+    "node-fetch": "^3.3.1"
   }
 }
