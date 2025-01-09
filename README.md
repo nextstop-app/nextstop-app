@@ -73,7 +73,7 @@
 ## How to update station/trip lists
 
 #### **TODO:**: automate this a bit better 
-  *Most up to date data is here: [MTA Data Downloads](http://web.mta.info/developers/developer-data-terms.html#data)*
+  *Most up to date data is here: [MTA Data Downloads](https://new.mta.info/developers)*
 1) `cd utilities/csvtojson/`
 1) `npm install`
 1) Create a folder called `/in/` = `utilities/csvtojson/in/`
